@@ -1,0 +1,1 @@
+1. TODO: Replace public read policy with auth-based rule once signup/login works
