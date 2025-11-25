@@ -1,0 +1,11 @@
+Layout
+src/api/
+├── supabase/
+│   ├── supabaseClient.ts      // Initializes the Supabase client
+│   └── types.ts               // TypeScript types for your Supabase tables
+├── auth/
+│   └── authService.ts         // Functions: login, signup, checkSession
+├── steps/
+│   └── stepService.ts         // Functions: fetchDailySteps, saveSteps, fetchLeaderboard
+└── user/
+    └── userService.ts         // Functions: fetchUserProfile, updateProfile
