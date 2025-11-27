@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
 
-export default function HomeScreen() {
+export default function ShopScreen() {
     return <View><Text>Hello</Text></View>;
 }
