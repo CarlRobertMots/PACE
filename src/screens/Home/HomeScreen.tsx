@@ -6,39 +6,41 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../navigation/types";
 
-//  COMMENTED OUT: We are disconnecting the backend for now
-// import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
+// 1. Import Boss Service
+import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
+// 2. Import Step Logic
+// Make sure this path points to where you actually saved the new StepCircle code!
 import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
 
 export default function HomeScreen() {
-  const [loading, setLoading] = useState(false); // Set to false immediately
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // 🤖 DUMMY DATA: Hardcoded boss so the screen looks nice
-  const boss = {
-    name: "Training Dummy",
-    current_hp: 50,
-    max_hp: 100,
-  };
-
-  /* 🔴 COMMENTED OUT: No fetching data
+  const [loading, setLoading] = useState(true);
   const [boss, setBoss] = useState<BossData | null>(null);
 
   useEffect(() => {
-    loadBossData();
+    loadCampData();
   }, []);
 
-  const loadBossData = async () => {
+  const loadCampData = async () => {
     setLoading(true);
-    const bossData = await fetchCurrentBoss();
-    setBoss(bossData);
-    setLoading(false);
+
+    try {
+      // A. Fetch Boss
+      const bossData = await fetchCurrentBoss();
+      setBoss(bossData);
+    } catch (error) {
+      console.error("Error loading home data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-  */
 
   if (loading) {
     return (
@@ -54,43 +56,63 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="mb-6 mt-2">
           <Text className="text-white text-2xl font-bold">Base Camp</Text>
-          <Text className="text-gray-400 text-sm">Step Tracking Test Mode</Text>
+          <Text className="text-gray-400 text-sm">Prepare for battle</Text>
         </View>
 
-        {/* --- BOSS SECTION (Mock Data) --- */}
+        {/*  BOSS SECTION  */}
         <View className="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700 shadow-lg">
-          <Text className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-2">
-            Target (Offline)
+          <Text className="text-red-500 font-bold uppercase tracking-widest text-xs mb-2">
+            Current Target
           </Text>
           <View className="items-center">
+            {/* Boss Icon */}
             <View className="h-24 w-24 bg-gray-700 rounded-full mb-3 items-center justify-center">
-              <Text className="text-4xl">🤖</Text>
+              <Text className="text-4xl">👹</Text>
             </View>
 
             <Text className="text-white text-xl font-bold mb-1">
-              {boss.name}
+              {boss ? boss.name : "Unknown Beast"}
             </Text>
 
+            {/* HP Bar */}
             <View className="w-full bg-gray-900 h-4 rounded-full mt-2 overflow-hidden border border-gray-600">
-              <View className="h-full bg-blue-600" style={{ width: "50%" }} />
+              <View
+                className="h-full bg-red-600"
+                style={{
+                  width: boss
+                    ? `${(boss.current_hp / boss.max_hp) * 100}%`
+                    : "0%",
+                }}
+              />
             </View>
+
             <Text className="text-gray-400 text-xs mt-1">
-              {boss.current_hp} / {boss.max_hp} HP
+              {boss ? `${boss.current_hp} / ${boss.max_hp} HP` : "Loading..."}
             </Text>
+
+            <Pressable
+              className="mt-6 bg-blue-600 px-6 py-2 rounded-full"
+              onPress={() => navigation.navigate("DetailedView")}
+            >
+              <Text className="text-white font-bold">Detailed View</Text>
+            </Pressable>
           </View>
         </View>
 
-        {/* --- STEP SECTION (The Real Test) --- */}
+        {/* STEP SECTION  */}
         <View className="bg-gray-800 rounded-xl p-6 border border-gray-700 items-center mb-6">
           <Text className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
-            Live Step Counter
+            Today's Progress
           </Text>
 
-          {/* This is the only thing we are testing right now */}
           <TouchableOpacity
             onPress={() => navigation.navigate("StepDetailScreen" as never)}
           >
             <StepCircle />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="mt-6 bg-blue-600 px-6 py-2 rounded-full">
+            <Text className="text-white font-bold">Sync Data</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

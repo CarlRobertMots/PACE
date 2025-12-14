@@ -14,6 +14,7 @@ export type TabStackParamList = {
 export type RootStackParamList = {
   Signin: undefined; // Login Screen
   Signup: undefined; // Register Screen
+  DetailedView: undefined;
   Home: NavigatorScreenParams<TabStackParamList>; // The Tab Navigator Container
   StepDetailScreen: undefined; // The Step Detail Screen
 };
