@@ -9,6 +9,7 @@ import * as Linking from "expo-linking";
 import MainTabs from "./src/screens/MainTabs";
 import Signin from "./src/screens/Auth/Signin/Signin";
 import Signup from "./src/screens/Auth/Signup/Signup";
+import DetailedView from "./src/screens/Home/DetailedView";
 import { RootStackParamList } from "./src/navigation/types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -48,6 +49,7 @@ export default function App() {
         <Stack.Screen name="Signin" component={Signin} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Home" component={MainTabs} />
+        <Stack.Screen name="DetailedView" component={DetailedView} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
+    View,
+    Text,
+    SafeAreaView,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    Pressable,
 } from "react-native";
 
 // 1. Import Boss Service (Real Data)
@@ -16,8 +17,11 @@ import {
   testSteps,
   StepCircle,
 } from "../../components/StepCounter/StepCountDisplay";
+import {NavigationProp, useNavigation} from "@react-navigation/native";
+import {RootStackParamList} from "../../navigation/types";
 
 export default function HomeScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [boss, setBoss] = useState<BossData | null>(null);
   const [steps, setSteps] = useState(0);
@@ -84,6 +88,10 @@ export default function HomeScreen() {
             <Text className="text-gray-400 text-xs mt-1">
               {boss ? `${boss.current_hp} / ${boss.max_hp} HP` : "Loading..."}
             </Text>
+              <Pressable className="mt-6 bg-blue-600 px-6 py-2 rounded-full"
+                         onPress={() => navigation.navigate("DetailedView")}>
+                  <Text className="text-white font-bold">Detailed View</Text>
+              </Pressable>
           </View>
         </View>
 
