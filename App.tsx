@@ -1,4 +1,3 @@
-// App.tsx
 import React, { useState, useEffect } from "react";
 import { StyleSheet, ActivityIndicator, View } from "react-native";
 import "./global.css";
@@ -9,38 +8,18 @@ import * as Linking from "expo-linking";
 import MainTabs from "./src/screens/MainTabs";
 import Signin from "./src/screens/Auth/Signin/Signin";
 import Signup from "./src/screens/Auth/Signup/Signup";
+
 import DetailedView from "./src/screens/Home/DetailedView";
+import StepDetailScreen from "./src/screens/Steps/StepDetailScreen";
+
 import { RootStackParamList } from "./src/navigation/types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-  // ... (keep your session state logic here) ...
   const [session, setSession] = useState<any>(null);
-  // ...
-
-  // 1. COMMENT THIS OUT FOR NOW
-  /* const linking = {
-    prefixes: [Linking.createURL("/")],
-    config: {
-      screens: {
-        Signin: "", 
-        Signup: "signup",
-        Home: {
-          path: "home",
-          screens: {
-            Camp: "camp",
-            Shop: "shop",
-            Profile: "profile",
-          },
-        },
-      },
-    },
-  };
-  */
 
   return (
-    // 2. REMOVE "linking={linking}" FROM HERE
     <NavigationContainer fallback={<ActivityIndicator size="large" />}>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
@@ -48,8 +27,17 @@ export default function App() {
       >
         <Stack.Screen name="Signin" component={Signin} />
         <Stack.Screen name="Signup" component={Signup} />
+
+        {/* Põhivaated (Home, Shop, Profile) */}
         <Stack.Screen name="Home" component={MainTabs} />
+
+        {/* --- Uued Ekraanid --- */}
+
+        {/* Tiimikaaslase lisatud vaade */}
         <Stack.Screen name="DetailedView" component={DetailedView} />
+
+        {/* Sinu lisatud vaade (et Step Circle klikkimine töötaks) */}
+        <Stack.Screen name="StepDetailScreen" component={StepDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
