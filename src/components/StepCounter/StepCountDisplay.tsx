@@ -1,29 +1,68 @@
-// Displays current/target numbers
-// src/components/StepCounter/StepCountDisplay.tsx
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Accelerometer } from "expo-sensors";
 
-/**
- * MOCK FUNCTION: Returns a fake step count for testing UI.
- * Later, we will replace this with real Pedometer data.
- */
-export const testSteps = async (): Promise<number> => {
-  // Simulate a delay like a real database call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(7245); // Fake steps for "Today"
-    }, 500);
-  });
+export const StepCircle = () => {
+  const [steps, setSteps] = useState(0);
+  const [monitoring, setMonitoring] = useState(false);
+
+  //  TUNING SETTINGS
+
+  const THRESHOLD = 1.4;
+
+  // How fast can you walk?
+  // 350ms means max ~3 steps per second. Prevents "double counting" one shake.
+  const STEP_DELAY_MS = 350;
+
+  useEffect(() => {
+    startTracking();
+    return () => stopTracking();
+  }, []);
+
+  let lastStepTime = 0;
+
+  const startTracking = () => {
+    setMonitoring(true);
+    // Update every 100ms (10 times a second)
+    Accelerometer.setUpdateInterval(100);
+
+    Accelerometer.addListener((data) => {
+      const { x, y, z } = data;
+
+      // Math: Total G-Force
+      const totalForce = Math.sqrt(x * x + y * y + z * z);
+
+      // Only count if force is significant AND enough time passed
+      if (totalForce > THRESHOLD) {
+        const now = Date.now();
+        if (now - lastStepTime > STEP_DELAY_MS) {
+          lastStepTime = now;
+          setSteps((current) => current + 1);
+        }
+      }
+    });
+  };
+
+  const stopTracking = () => {
+    setMonitoring(false);
+    Accelerometer.removeAllListeners();
+  };
+
+  return (
+    <View className="items-center">
+      <View className="h-40 w-40 rounded-full border-8 border-green-500 items-center justify-center bg-gray-800 mb-4 shadow-lg">
+        <Text className="text-white text-4xl font-extrabold">{steps}</Text>
+        <Text className="text-gray-400 text-xs uppercase tracking-widest">
+          {monitoring ? "Active" : "Paused"}
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => setSteps(0)}
+        className="bg-gray-700 px-6 py-2 rounded-full"
+      >
+        <Text className="text-white font-bold">Reset</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
-
-/**
- * OPTIONAL: A reusable UI component for the circle if you want to use it elsewhere.
- */
-export const StepCircle = ({ steps }: { steps: number }) => (
-  <View className="h-40 w-40 rounded-full border-8 border-blue-500 items-center justify-center shadow-lg bg-gray-800">
-    <Text className="text-white text-4xl font-extrabold">{steps}</Text>
-    <Text className="text-gray-400 text-xs uppercase tracking-widest">
-      Steps
-    </Text>
-  </View>
-);

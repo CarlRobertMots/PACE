@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.carl.pace",
+      "infoPlist": {
+        "NSMotionUsageDescription": "We use motion sensors to track your steps for the RPG game."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +25,9 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+
+      "permissions": ["android.permission.ACTIVITY_RECOGNITION"]
     },
     "web": {
       "bundler": "metro",

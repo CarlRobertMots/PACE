@@ -15,6 +15,7 @@ export type RootStackParamList = {
   Signin: undefined; // Login Screen
   Signup: undefined; // Register Screen
   Home: NavigatorScreenParams<TabStackParamList>; // The Tab Navigator Container
+  StepDetailScreen: undefined; // The Step Detail Screen
 };
 
 // 3. Helper Types
