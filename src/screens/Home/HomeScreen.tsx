@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Pressable,
+  Platform,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/types";
@@ -15,7 +16,6 @@ import { RootStackParamList } from "../../navigation/types";
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
 // 2. Import Step Logic
-// Make sure this path points to where you actually saved the new StepCircle code!
 import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
 
 export default function HomeScreen() {
@@ -30,13 +30,12 @@ export default function HomeScreen() {
 
   const loadCampData = async () => {
     setLoading(true);
-
     try {
-      // A. Fetch Boss
       const bossData = await fetchCurrentBoss();
       setBoss(bossData);
     } catch (error) {
       console.error("Error loading home data:", error);
+      setBoss(null);
     } finally {
       setLoading(false);
     }
@@ -59,7 +58,7 @@ export default function HomeScreen() {
           <Text className="text-gray-400 text-sm">Prepare for battle</Text>
         </View>
 
-        {/*  BOSS SECTION  */}
+        {/* BOSS SECTION */}
         <View className="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700 shadow-lg">
           <Text className="text-red-500 font-bold uppercase tracking-widest text-xs mb-2">
             Current Target
@@ -71,7 +70,7 @@ export default function HomeScreen() {
             </View>
 
             <Text className="text-white text-xl font-bold mb-1">
-              {boss ? boss.name : "Unknown Beast"}
+              {boss?.name ?? "Unknown Beast"}
             </Text>
 
             {/* HP Bar */}
@@ -79,9 +78,7 @@ export default function HomeScreen() {
               <View
                 className="h-full bg-red-600"
                 style={{
-                  width: boss
-                    ? `${(boss.current_hp / boss.max_hp) * 100}%`
-                    : "0%",
+                  width: boss ? `${(boss.current_hp / boss.max_hp) * 100}%` : "0%",
                 }}
               />
             </View>
@@ -99,7 +96,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* STEP SECTION  */}
+        {/* STEP SECTION */}
         <View className="bg-gray-800 rounded-xl p-6 border border-gray-700 items-center mb-6">
           <Text className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
             Today's Progress
@@ -108,7 +105,14 @@ export default function HomeScreen() {
           <TouchableOpacity
             onPress={() => navigation.navigate("StepDetailScreen" as never)}
           >
-            <StepCircle />
+            {/* Render StepCircle only if platform supports it */}
+            {Platform.OS !== "web" ? (
+              <StepCircle />
+            ) : (
+              <View className="h-24 w-24 bg-gray-700 rounded-full items-center justify-center">
+                <Text className="text-white">0%</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity className="mt-6 bg-blue-600 px-6 py-2 rounded-full">
