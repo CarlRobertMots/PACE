@@ -17,6 +17,7 @@ export interface BossData {
   };
 }
 
+// Fetch current boss safely
 export const fetchCurrentBoss = async (): Promise<BossData | null> => {
   try {
     const { data, error } = await supabase
@@ -36,14 +37,25 @@ export const fetchCurrentBoss = async (): Promise<BossData | null> => {
       .single();
 
     if (error) {
-      console.error("Error fetching current boss:", error.message);
+      console.warn("Error fetching current boss:", error.message);
       return null;
     }
 
-    // 🔴 PROBLEM: TypeScript thinks data.theme is an Array.
-    // 🟢 FIX: We treat 'data' as 'any' temporarily, then manually clean it up.
+    if (!data) {
+      console.warn("No boss found");
+      return null;
+    }
 
     const rawData = data as any;
+
+    // Handle array expansions safely
+    const theme = Array.isArray(rawData.theme) ? rawData.theme[0] : rawData.theme;
+    const guild = Array.isArray(rawData.guild) ? rawData.guild[0] : rawData.guild;
+
+    if (!theme || !guild) {
+      console.warn("Theme or guild missing in boss data");
+      return null;
+    }
 
     const formattedData: BossData = {
       id: rawData.id,
@@ -51,10 +63,8 @@ export const fetchCurrentBoss = async (): Promise<BossData | null> => {
       max_hp: rawData.max_hp,
       current_hp: rawData.current_hp,
       image_url: rawData.image_url,
-
-      // Check if it's an array. If so, grab the first item. If not, use it as is.
-      theme: Array.isArray(rawData.theme) ? rawData.theme[0] : rawData.theme,
-      guild: Array.isArray(rawData.guild) ? rawData.guild[0] : rawData.guild,
+      theme,
+      guild,
     };
 
     return formattedData;
