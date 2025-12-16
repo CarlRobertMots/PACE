@@ -1,5 +1,4 @@
 // src/screens/Auth/Signin/Signin.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -9,20 +8,20 @@ import {
   KeyboardAvoidingView,
   Platform,
   ImageBackground,
+  StyleSheet,
 } from "react-native";
-import { styles } from "./styles";
-// 1. Import NavigationProp
-import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-// 2. Import the AuthStackParamList from your types file
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../navigation/types";
 
 type Props = {
   onSubmit?: (email: string, password: string) => Promise<void> | void;
 };
 
+// Static user for testing
+const STATIC_USER = { email: "test@test.com", password: "testpass" };
+
 export default function Signin({ onSubmit }: Props) {
-  // 3. Apply the correct type to useNavigation
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [email, setEmail] = useState("");
@@ -48,13 +47,21 @@ export default function Signin({ onSubmit }: Props) {
     setError(null);
     setLoading(true);
     try {
-      if (onSubmit) await Promise.resolve(onSubmit(email, password));
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
+      // Simulate login with static user
+      if (email === STATIC_USER.email && password === STATIC_USER.password) {
+        // Optional callback for external login logic
+        if (onSubmit) await Promise.resolve(onSubmit(email, password));
+
+        // Navigate to MainTabs / Home
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+      } else {
+        setError("Invalid credentials");
+      }
     } catch (e) {
-      setError((e as Error).message || "Signup failed");
+      setError((e as Error).message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -125,7 +132,6 @@ export default function Signin({ onSubmit }: Props) {
             Don't have an account?{" "}
             <Text
               style={styles.footerLink}
-              // Navigation call is now typed correctly
               onPress={() => navigation.navigate("Signup")}
               accessibilityRole="link"
               accessibilityLabel="Go to Sign Up"
@@ -138,3 +144,84 @@ export default function Signin({ onSubmit }: Props) {
     </ImageBackground>
   );
 }
+
+// Styles combined in the same file
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  wallpaper: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 34,
+    fontWeight: "400",
+    textAlign: "center",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "400",
+    textAlign: "center",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  input: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.6)",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    width: "90%",
+  },
+  label: {
+    width: "90%",
+    alignSelf: "center",
+    textAlign: "left",
+    color: "#fff",
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  button: {
+    width: "90%",
+    alignSelf: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.6)",
+    borderWidth: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  buttonDisabled: { opacity: 0.6 },
+  buttonText: { color: "white", textAlign: "center", fontSize: 16, fontWeight: "400" },
+  forgotText: { textAlign: "right", width: "90%", color: "white", marginVertical: 15 },
+  footerText: { color: "white", marginTop: 8, textAlign: "center", textShadowOffset: { width: 0, height: 0 }, textShadowColor: "#000", textShadowRadius: 2, fontSize: 14, marginVertical: 15 },
+  footerLink: { textDecorationLine: "underline", fontWeight: "600", color: "#fff" },
+  blurContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 25,
+    width: "90%",
+    margin: 16,
+    textAlign: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    borderRadius: 20,
+    borderColor: "white",
+    borderWidth: 0.5,
+  },
+});
