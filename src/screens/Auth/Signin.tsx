@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../navigation/types";
+import { RootStackParamList } from "../../navigation/types";
+import { signin } from "../../routes/authRoute";
 
 type Props = {
   onSubmit?: (email: string, password: string) => Promise<void> | void;
@@ -38,38 +39,34 @@ export default function Signin({ onSubmit }: Props) {
   }
 
   async function handlePress() {
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setError(null);
-    setLoading(true);
-    try {
-      // Simulate login with static user
-      if (email === STATIC_USER.email && password === STATIC_USER.password) {
-        // Optional callback for external login logic
-        if (onSubmit) await Promise.resolve(onSubmit(email, password));
-
-        // Navigate to MainTabs / Home
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      } else {
-        setError("Invalid credentials");
-      }
-    } catch (e) {
-      setError((e as Error).message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+  const validationError = validate();
+  if (validationError) {
+    setError(validationError);
+    return;
   }
+
+  setError(null);
+  setLoading(true);
+
+  try {
+    await signin({ email, password });
+
+    // Redirect to main app
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Home" }],
+    });
+  } catch (e) {
+    setError((e as Error).message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+}
+
 
   return (
     <ImageBackground
-      source={require("../../../../assets/wallpaper.png")}
+      source={require("../../../assets/wallpaper.png")}
       style={styles.wallpaper}
       resizeMode="cover"
     >

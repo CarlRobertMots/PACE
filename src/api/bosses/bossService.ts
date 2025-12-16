@@ -1,6 +1,6 @@
 // src/api/bosses/bossService.ts
 
-import { supabase } from "../supabase/supabaseClient";
+import { supabase } from "../../lib/supabaseClient";
 
 export interface BossData {
   id: string;

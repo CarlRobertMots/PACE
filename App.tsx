@@ -6,8 +6,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Linking from "expo-linking";
 
 import MainTabs from "./src/screens/MainTabs";
-import Signin from "./src/screens/Auth/Signin/Signin";
-import Signup from "./src/screens/Auth/Signup/Signup";
+import Signin from "./src/screens/Auth/Signin";
+import Signup from "./src/screens/Auth/Signup";
 
 import DetailedView from "./src/screens/Home/DetailedView";
 import StepDetailScreen from "./src/screens/Steps/StepDetailScreen";
