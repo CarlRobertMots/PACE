@@ -15,8 +15,7 @@ import { RootStackParamList } from "../../navigation/types";
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
 // 2. Import Step Logic
-// Make sure this path points to where you actually saved the new StepCircle code!
-import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
+import StepCircle from "../../components/StepCounter/StepCountDisplay";
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
