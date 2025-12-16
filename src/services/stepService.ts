@@ -7,7 +7,12 @@ type StepRecord = {
   synced_at?: string;
 };
 
-export async function getSteps(userId: string, startDate?: string, endDate?: string) {
+// Fetch Steps
+export async function getSteps(
+  userId: string,
+  startDate?: string,
+  endDate?: string
+) {
   let query = supabase
     .from("steps")
     .select("user_id, date, steps, synced_at")
@@ -22,10 +27,37 @@ export async function getSteps(userId: string, startDate?: string, endDate?: str
   return data;
 }
 
-export async function addSteps({ user_id, date, steps, synced_at }: StepRecord) {
+//  Smart Update (The "High Score" Logic)
+export async function updateSteps(userId: string, date: string, steps: number) {
+  //  Check what is currently in the DB
+  const { data: current, error: fetchError } = await supabase
+    .from("steps")
+    .select("steps")
+    .eq("user_id", userId)
+    .eq("date", date)
+    .maybeSingle();
+
+  if (fetchError) throw new Error(fetchError.message);
+
+  //  SAFETY CHECK: Only overwrite if new steps > old steps
+  // If we already have more steps in the cloud, ignore this update.
+  if (current && steps <= current.steps) {
+    console.log(`☁️ Cloud has ${current.steps}, ignoring local ${steps}.`);
+    return current;
+  }
+
+  //  Upsert (Save the new High Score)
   const { data, error } = await supabase
     .from("steps")
-    .insert({ user_id, date, steps, synced_at })
+    .upsert(
+      {
+        user_id: userId,
+        date: date,
+        steps: steps,
+        synced_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id, date" }
+    )
     .select()
     .single();
 
@@ -33,15 +65,7 @@ export async function addSteps({ user_id, date, steps, synced_at }: StepRecord) 
   return data;
 }
 
-export async function updateSteps(userId: string, date: string, steps: number) {
-  const { data, error } = await supabase
-    .from("steps")
-    .update({ steps, synced_at: new Date().toISOString() })
-    .eq("user_id", userId)
-    .eq("date", date)
-    .select()
-    .single();
-
-  if (error) throw new Error(error.message);
-  return data;
+//  Wrapper (Keeps other files happy)
+export async function addSteps(record: StepRecord) {
+  return updateSteps(record.user_id, record.date, record.steps);
 }

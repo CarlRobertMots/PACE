@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -15,14 +15,28 @@ import { RootStackParamList } from "../../navigation/types";
 // 1. Import Boss Service
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
-// 2. Import Step Logic
-import StepCircle from "../../components/StepCounter/StepCountDisplay";
+// 2. Import Step Context & New Visual Component
+import { useSteps } from "../../components/StepCounter/StepContext";
+import StepCircle from "../../components/StepCounter/StepCircle";
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [boss, setBoss] = useState<BossData | null>(null);
-  const [steps, setSteps] = useState(0);
+
+  const { steps } = useSteps();
+
+  // StepCircle ray data
+  const mockDetailedHistory = useMemo(() => {
+    return Array.from({ length: 144 }).map((_, i) => {
+      let base = Math.random() * 50;
+      if (i > 36 && i < 60) base += Math.random() * 800;
+      if (i > 72 && i < 84) base += Math.random() * 400;
+      if (i > 108 && i < 126) base += Math.random() * 1000;
+      if (i < 30 || i > 138) base = Math.random() < 0.1 ? 50 : 0;
+      return Math.floor(base);
+    });
+  }, []);
 
   useEffect(() => {
     loadCampData();
@@ -94,27 +108,23 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* STEP SECTION */}
-        <View className="bg-gray-800 rounded-xl p-6 border border-gray-700 items-center mb-6">
-          <Text className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
-            Today's Progress
-          </Text>
-
+        {/* STEP CIRCLE (Standalone, No Container) */}
+        <View className="items-center mb-6">
           <TouchableOpacity
             onPress={() => navigation.navigate("StepDetailScreen" as never)}
+            className="items-center justify-center"
           >
-            {/* Render StepCircle only if platform supports it */}
             {Platform.OS !== "web" ? (
-              <StepCircle />
+              <StepCircle
+                steps={steps}
+                radius={75}
+                detailedData={mockDetailedHistory}
+              />
             ) : (
               <View className="h-24 w-24 bg-gray-700 rounded-full items-center justify-center">
-                <Text className="text-white">0%</Text>
+                <Text className="text-white">Web Not Supported</Text>
               </View>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity className="mt-6 bg-blue-600 px-6 py-2 rounded-full">
-            <Text className="text-white font-bold">Sync Data</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
