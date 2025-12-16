@@ -9,8 +9,10 @@ import {
   Pressable,
   Platform,
 } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../navigation/types";
 
-// 1. Import Boss Service (Real Data)
+// 1. Import Boss Service
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
 // 2. Import Step Logic
