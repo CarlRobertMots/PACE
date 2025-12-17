@@ -1,5 +1,3 @@
-// src/screens/Auth/Signup/Signup.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -9,13 +7,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ImageBackground,
+  StyleSheet,
 } from "react-native";
-import { styles } from "./styles";
-// 1. Import NavigationProp to define the type of navigation
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-// 2. Import the AuthStackParamList from your central types file
-import { RootStackParamList } from "../../../navigation/types";
+import { RootStackParamList } from "../../navigation/types";
+import { signup } from "../../routes/authRoute";
 
 type Props = {
   onSubmit?: (
@@ -26,20 +23,31 @@ type Props = {
 };
 
 export default function Signup({ onSubmit }: Props) {
-  // 3. Apply the type to the useNavigation hook
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handlePress() {
     setError(null);
     setLoading(true);
+
     try {
-      if (onSubmit) await Promise.resolve(onSubmit(email, username, password));
+      await signup({
+        email,
+        username,
+        password,
+      });
+
+      // Optional: navigate immediately
+      // Or let your auth listener redirect automatically
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     } catch (e) {
       setError((e as Error).message || "Signup failed");
     } finally {
@@ -49,7 +57,7 @@ export default function Signup({ onSubmit }: Props) {
 
   return (
     <ImageBackground
-      source={require("../../../../assets/wallpaper.png")}
+      source={require("../../../assets/wallpaper.png")}
       style={styles.wallpaper}
       resizeMode="cover"
     >
@@ -62,9 +70,7 @@ export default function Signup({ onSubmit }: Props) {
             <Text style={styles.title}>Register an account</Text>
           </BlurView>
 
-          {error ? (
-            <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text>
-          ) : null}
+          {error && <Text style={styles.error}>{error}</Text>}
 
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -82,7 +88,7 @@ export default function Signup({ onSubmit }: Props) {
           <TextInput
             style={styles.input}
             placeholder="Username"
-            placeholderTextColor="#FFFFFF"
+            placeholderTextColor="#fff"
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
@@ -104,12 +110,10 @@ export default function Signup({ onSubmit }: Props) {
             style={({ pressed }) => [
               styles.button,
               loading && styles.buttonDisabled,
-              pressed && !loading ? { opacity: 0.85 } : null,
+              pressed && !loading && { opacity: 0.85 },
             ]}
             onPress={handlePress}
             disabled={loading}
-            accessibilityRole="button"
-            accessibilityLabel="Register Account"
           >
             <Text style={styles.buttonText}>
               {loading ? "Registering..." : "Register Account"}
@@ -120,10 +124,7 @@ export default function Signup({ onSubmit }: Props) {
             Already have an account?{" "}
             <Text
               style={styles.footerLink}
-              // This navigation call will now work correctly
               onPress={() => navigation.navigate("Signin")}
-              accessibilityRole="link"
-              accessibilityLabel="Go to Sign in"
             >
               Sign in
             </Text>
@@ -133,3 +134,99 @@ export default function Signup({ onSubmit }: Props) {
     </ImageBackground>
   );
 }
+
+/* =========================
+   Styles (local to screen)
+   ========================= */
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+
+  wallpaper: {
+    ...StyleSheet.absoluteFillObject,
+    flex: 1,
+    alignItems: "center",
+  },
+
+  title: {
+    color: "#fff",
+    fontSize: 34,
+    fontFamily: "Minecraft",
+    fontWeight: "400",
+    textAlign: "center",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+
+  blurContainer: {
+    padding: 25,
+    margin: 16,
+    borderRadius: 20,
+    borderColor: "white",
+    borderWidth: 0.5,
+    overflow: "hidden",
+  },
+
+  label: {
+    width: "90%",
+    color: "white",
+    fontSize: 14,
+    marginBottom: 8,
+    fontFamily: "Minecraft",
+  },
+
+  input: {
+    width: "90%",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.6)",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 16,
+    color: "white",
+  },
+
+  button: {
+    width: "90%",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderColor: "rgba(255,255,255,0.6)",
+    borderWidth: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "400",
+  },
+
+  footerText: {
+    color: "white",
+    marginTop: 8,
+    textAlign: "center",
+    fontSize: 14,
+  },
+
+  footerLink: {
+    textDecorationLine: "underline",
+    fontWeight: "600",
+    color: "#fff",
+  },
+
+  error: {
+    color: "red",
+    marginBottom: 10,
+  },
+});
