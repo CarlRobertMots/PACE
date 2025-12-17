@@ -69,11 +69,15 @@ export default function IndexScreen() {
         <View style={styles.content}>
           {/* BOSS */}
 
+        <Pressable
+          onPress={() => navigation.navigate("DetailedView")}
+        >
           <BossHealthBar
-          name={boss?.name ?? "Master Beater"}
-          currentHp={boss?.current_hp ?? 650}
-          maxHp={boss?.max_hp ?? 1000}
+            name={boss?.name ?? "Master Beater"}
+            currentHp={boss?.current_hp ?? 650}
+            maxHp={boss?.max_hp ?? 1000}
           />
+        </Pressable>
 
           {/* STEP TRACKER — SAME LOGIC */}
           <View style={styles.stepSection}>

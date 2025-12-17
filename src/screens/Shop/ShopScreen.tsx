@@ -7,9 +7,19 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { Linking } from "react-native";
+
 
 
 export default function Shop() {
+
+
+   const handlePress = () => {
+    // Replace with your target URL
+    const url = "https://preview.redd.it/meme-dumping-until-i-can-skip-both-ads-at-once-v0-4xsd6lszeoqc1.jpeg?auto=webp&s=c1262c284c4eb512c7ce50dce768a5292869c077";
+    Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
+  };
+
   return (
     <View style={styles.container}>
 
@@ -48,10 +58,10 @@ export default function Shop() {
 
         {/* Small products */}
         <View style={styles.grid2}>
-          <TouchableOpacity style={styles.smallCard}>
-            <Text style={styles.smallText}>Remove Ads</Text>
-            <Text style={styles.smallText}>$2.99</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.smallCard} onPress={handlePress}>
+      <Text style={styles.smallText}>Remove Ads</Text>
+      <Text style={styles.smallText}>$2.99</Text>
+        </TouchableOpacity>
 
           <TouchableOpacity style={styles.smallCard}>
             <Text style={[styles.smallText, { fontSize: 13 }]}>

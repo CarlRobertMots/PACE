@@ -85,7 +85,7 @@ function statBar(label: string, color: string, width: string) {
     <View style={{ marginBottom: 10 }}>
       <Text style={styles.barLabel}>{label}</Text>
       <View style={styles.barOuter}>
-        <View style={[styles.barInner, { backgroundColor: color, width }]} />
+        <View style={[styles.barInner]} />
       </View>
     </View>
   );

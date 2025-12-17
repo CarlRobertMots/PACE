@@ -1,99 +1,142 @@
-import React, { useState, useEffect } from 'react';
+// src/screens/Home/BossDetailScreen.tsx
+import React, { useEffect, useState } from "react";
 import {
-    View,
-    Text,
-    SafeAreaView,
-    ScrollView,
-    Pressable,
-    ActivityIndicator,
-} from 'react-native';
-import { useNavigation } from "@react-navigation/native";
-import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import { getAllBosses } from "../../services/bossService";
+import { supabase } from "../../lib/supabaseClient";
+import { simulateBossFight, BossFightResult } from "../../services/bossFightService";
+import { getUserInfoById } from "../../services/userService";
 
-export default function DetailedView() {
-    const navigator = useNavigation();
-    const [boss, setBoss] = useState<BossData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [logs, setLogs] = useState<string[]>([
-        'Battle started',
-        'Player dealt 150 damage',
-    ]);
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../navigation/types";
 
-    const healthPercentage = boss
-        ? (boss.current_hp / boss.max_hp) * 100
-        : 0;
+type Boss = {
+  id: string;
+  name: string;
+  required_steps: number;
+  reward_xp: number;
+  sprite_url: string;
+};
 
-    useEffect(() => {
-        const loadBossData = async () => {
-            setLoading(true);
-            const bossData = await fetchCurrentBoss();
-            setBoss(bossData);
-            setLoading(false);
-        };
+export default function BossDetailScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [loading, setLoading] = useState(true);
+  const [boss, setBoss] = useState<Boss | null>(null);
+  const [fightResult, setFightResult] = useState<BossFightResult | null>(null);
 
-        loadBossData();
-    }, []);
+  useEffect(() => {
+    loadBossAndFight();
+  }, []);
 
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 bg-gray-900 justify-center items-center">
-                <ActivityIndicator size="large" color="#ef4444" />
-            </SafeAreaView>
-        );
+  const loadBossAndFight = async () => {
+    try {
+      const bosses = await getAllBosses();
+      if (!bosses || bosses.length === 0) throw new Error("No bosses found");
+      const selectedBoss = bosses[0];
+      setBoss(selectedBoss);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No logged-in user");
+
+      const result = await simulateBossFight(user.id, selectedBoss.id);
+      setFightResult(result);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  if (loading) {
     return (
-        <SafeAreaView className="flex-1 bg-gray-900">
-            <ScrollView>
-                {/* Header */}
-                <View className="p-4 border-b border-gray-700">
-                    <Pressable
-                        onPress={() => navigator.goBack()}
-                        className="bg-gray-700 px-4 py-2 rounded-lg self-start"
-                    >
-                        <Text className="text-white text-base font-medium">← Back</Text>
-                    </Pressable>
-                </View>
-
-                {/* Boss Section */}
-                <View className="items-center p-6">
-                    <View className="w-40 h-40 rounded-full border-4 border-red-500 bg-gray-800 justify-center items-center">
-                        <Text className="text-6xl">👹</Text>
-                    </View>
-                    <Text className="text-white text-2xl font-bold mt-4">
-                        {boss ? boss.name : 'Unknown Beast'}
-                    </Text>
-                </View>
-
-                {/* Health Bar */}
-                <View className="px-6 mb-6">
-                    <View className="flex-row justify-between mb-2">
-                        <Text className="text-white font-semibold">HP</Text>
-                        <Text className="text-white font-semibold">
-                            {boss?.current_hp || 0} / {boss?.max_hp || 0}
-                        </Text>
-                    </View>
-                    <View className="w-full bg-gray-900 h-4 rounded-full overflow-hidden border border-gray-600">
-                        <View
-                            className="h-full bg-red-600"
-                            style={{ width: `${healthPercentage}%` }}
-                        />
-                    </View>
-                </View>
-
-                {/* Activity Logs */}
-                <View className="px-6 pb-6">
-                    <Text className="text-white text-lg font-bold mb-3">Activity Logs</Text>
-                    <View className="bg-gray-800 rounded-lg p-4">
-                        {logs.map((log, index) => (
-                            <View key={index} className="flex-row mb-2">
-                                <Text className="text-gray-500 mr-2">•</Text>
-                                <Text className="text-gray-300 flex-1">{log}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#a855f7" />
+      </View>
     );
+  }
+
+  return (
+    <ScrollView style={styles.root} contentContainerStyle={{ paddingBottom: 120 }}>
+      {/* --- BACK BUTTON --- */}
+      <Pressable
+        onPress={() => navigation.navigate("Home" as never)}
+        style={{
+          padding: 12,
+          backgroundColor: "#a855f7",
+          borderRadius: 8,
+          alignSelf: "flex-start",
+          margin: 16,
+          zIndex: 10,
+        }}
+      >
+        <Text style={{ color: "white", fontFamily: "Pixel", fontSize: 16 }}>
+          Back to Main
+        </Text>
+      </Pressable>
+
+      {/* --- HERO/BOSS IMAGE --- */}
+      <View style={styles.hero}>
+        <Image
+          source={{ uri: "https://api.builder.io/api/v1/image/assets/TEMP/f16ee76082947569e5e4b34ec31145e6549504f9?width=1375" }}
+          style={styles.heroImg}
+          resizeMode="cover"
+        />
+        <Image
+          source={{ uri: boss?.sprite_url }}
+          style={styles.bossSprite}
+          resizeMode="contain"
+        />
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.bossName}>{boss?.name} — Boss</Text>
+
+        <View style={styles.hpRow}>
+          <View style={[styles.hpFill, { width: `${fightResult?.bossRemainingHpPercent ?? 50}%` }]} />
+          <View style={styles.hpBox} />
+        </View>
+        <Text style={styles.hpText}>
+          {fightResult ? `${fightResult.bossRemainingHpPercent}% HP` : "Loading..."}
+        </Text>
+
+        <View style={styles.logsCard}>
+          <Text style={styles.cardTitle}>Combat Logs</Text>
+          <Text style={styles.logText}>
+            User dealt {fightResult?.damage.userToBoss} DMG
+          </Text>
+          <Text style={styles.logText}>
+            Boss dealt {fightResult?.damage.bossToUser} DMG
+          </Text>
+          <Text style={styles.logText}>
+            User {fightResult?.userWon ? "won" : "lost"} the fight
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
+  );
 }
+
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: "black" },
+  loader: { flex: 1, justifyContent: "center", alignItems: "center" },
+  hero: { height: 398, overflow: "hidden", position: "relative" },
+  heroImg: { width: "100%", height: "100%", position: "absolute" },
+  bossSprite: { width: 200, height: 150, position: "absolute", top: 50, left: "50%", marginLeft: -100 },
+  content: { paddingHorizontal: 16, marginTop: -48 },
+  bossName: { color: "white", fontFamily: "Pixel", fontSize: 16, textShadowColor: "#000", textShadowOffset: { width: 1, height: 1 }, marginBottom: 8 },
+  hpRow: { flexDirection: "row", gap: 8, marginBottom: 4 },
+  hpFill: { height: 24, backgroundColor: "#dc2626", borderWidth: 1, borderColor: "black", flex: 1 },
+  hpBox: { width: 80, height: 24, backgroundColor: "white", borderWidth: 1, borderColor: "black" },
+  hpText: { color: "white", fontFamily: "Pixel", fontSize: 12, marginBottom: 16 },
+  logsCard: { borderWidth: 2, borderColor: "rgba(168,85,247,0.5)", borderRadius: 10, padding: 16, backgroundColor: "rgba(0,0,0,0.6)" },
+  cardTitle: { color: "white", fontSize: 20, marginBottom: 8, textAlign: "center", fontFamily: "Pixel" },
+  logText: { color: "white", fontFamily: "Pixel", fontSize: 14, marginBottom: 4 },
+});
