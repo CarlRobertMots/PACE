@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { supabase } from "../../lib/supabaseClient";
 import { getUserInfoById } from "../../services/userService";
 
@@ -16,7 +23,9 @@ export default function Profile() {
 
   const fetchUserData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setLoading(false);
         return;
@@ -42,7 +51,6 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* HEADER */}
         <View style={styles.header}>
@@ -127,7 +135,6 @@ function statBar(label: string, color: string, width: string) {
     </View>
   );
 }
-
 
 const PURPLE = "rgba(168,85,247,0.75)";
 
