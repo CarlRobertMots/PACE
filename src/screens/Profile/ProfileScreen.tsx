@@ -1,10 +1,56 @@
-import React from "react";
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { supabase } from "../../lib/supabaseClient";
+import { getUserInfoById } from "../../services/userService";
 
 export default function Profile() {
+  const [username, setUsername] = useState(null);
+  const [level, setLevel] = useState(1);
+  const [xp, setXp] = useState(0);
+  const [health, setHealth] = useState(100);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const userInfo = await getUserInfoById(user.id);
+
+      setUsername(userInfo?.username || null);
+      setLevel(userInfo?.level || 1);
+      setXp(userInfo?.xp || 0);
+      setHealth(userInfo?.health || 100);
+    } catch (err) {
+      console.error("Error fetching username:", err);
+    } finally {
+      setLoading(false);
+      console.log("Loading complete, username state:", username);
+    }
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#a855f7" />;
+  }
+
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* HEADER */}
         <View style={styles.header}>
@@ -40,14 +86,13 @@ export default function Profile() {
           <View style={styles.card}>
             <View style={styles.row}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.name}>Anon</Text>
-                <Text style={styles.level}>Lvl: 2</Text>
+                <Text style={styles.name}>{username || "Anon"}</Text>
+                <Text style={styles.level}>Lvl: {level}</Text>
               </View>
 
               <View style={{ flex: 1 }}>
-                {statBar("Health", "red", "60%")}
-                {statBar("Mana", "blue", "11%")}
-                {statBar("Experience", "#22d3ee", "93%")}
+                {statBar("Health", "red", `${health}%`)}
+                {statBar("Experience", "#22d3ee", `${xp}%`)}
               </View>
             </View>
           </View>
@@ -90,7 +135,6 @@ function statBar(label: string, color: string, width: string) {
     </View>
   );
 }
-
 
 const PURPLE = "rgba(168,85,247,0.75)";
 
