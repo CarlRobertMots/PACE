@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 export async function getUserInfoById(userId: string) {
   const { data, error } = await supabase
     .from("users")
-    .select("id, username, avatar_url, xp, total_steps, level")
+    .select("id, username, avatar_url, xp, health, total_steps, level")
     .eq("id", userId)
     .maybeSingle();
 
