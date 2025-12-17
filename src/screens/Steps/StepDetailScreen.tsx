@@ -6,6 +6,8 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -23,7 +25,9 @@ export default function StepDetailScreen() {
   const km = (steps * 0.00076).toFixed(2);
   const kcal = Math.floor(steps * 0.04);
   const totalMinutes = Math.floor(steps / 110);
-  const timeString = `${Math.floor(totalMinutes / 60)}:${(totalMinutes % 60).toString().padStart(2, "0")}`;
+  const timeString = `${Math.floor(totalMinutes / 60)}:${(totalMinutes % 60)
+    .toString()
+    .padStart(2, "0")}`;
 
   // MOCK DATA GENERATOR (For Rays)
   const mockDetailedHistory = useMemo(() => {
@@ -38,7 +42,6 @@ export default function StepDetailScreen() {
   }, []);
 
   // WEEK DATA
-  // Data: Mon, Tue, Wed, Thu, Fri, Sat, Sun
   const weekData = [4400, 2400, 10400, 400, 4900, 3600, 0];
   const maxWeekStep = 12000;
   const totalWeekSteps = weekData.reduce((a, b) => a + b, 0);
@@ -46,7 +49,9 @@ export default function StepDetailScreen() {
   const renderTab = (tabName: "Day" | "Week" | "Month") => (
     <TouchableOpacity onPress={() => setActiveTab(tabName)}>
       <Text
-        className={`text-lg font-bold ${activeTab === tabName ? "text-white" : "text-gray-500"}`}
+        className={`text-lg font-bold ${
+          activeTab === tabName ? "text-white" : "text-gray-500"
+        }`}
       >
         {tabName}
       </Text>
@@ -54,7 +59,12 @@ export default function StepDetailScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
+    <SafeAreaView
+      className="flex-1 bg-black"
+      style={{
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+      }}
+    >
       {/* HEADER */}
       <View className="px-4 py-4">
         <TouchableOpacity onPress={() => navigation.goBack()} className="mb-4">
@@ -68,8 +78,8 @@ export default function StepDetailScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1">
-        {/*  DAY VIEW */}
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* DAY VIEW */}
         {activeTab === "Day" && (
           <View className="items-center mt-8">
             <View className="mb-12">
@@ -105,20 +115,18 @@ export default function StepDetailScreen() {
           </View>
         )}
 
-        {/* WEEK VIEW*/}
+        {/* WEEK VIEW */}
         {activeTab === "Week" && (
           <View className="items-center mt-4">
-            {/* 1. Week Circle Summary */}
             <View className="mb-12">
               <StepCircle
                 steps={totalWeekSteps}
                 radius={100}
                 detailedData={mockDetailedHistory}
-                title="This Week" //
+                title="This Week"
               />
             </View>
 
-            {/* 2. Custom Pill Bar Chart */}
             <View className="flex-row items-end justify-between w-full h-64 px-6 mb-12">
               {weekData.map((val, index) => {
                 const heightPercentage = Math.min(
@@ -128,21 +136,17 @@ export default function StepDetailScreen() {
 
                 return (
                   <View key={index} className="items-center flex-1 space-y-2">
-                    {/* Number Label floating above/inside */}
                     <Text className="text-white text-[10px] font-bold h-4">
                       {val > 0 ? val : ""}
                     </Text>
 
-                    {/* Bar Container (The dark pill) */}
                     <View className="w-8 h-40 bg-gray-800 rounded-full justify-end overflow-hidden">
-                      {/* Red Fill (The progress) */}
                       <View
                         className="w-full bg-red-600 rounded-full"
                         style={{ height: `${heightPercentage}%` }}
                       />
                     </View>
 
-                    {/* Day Label */}
                     <Text className="text-gray-500 text-xs font-bold">
                       {["M", "T", "W", "T", "F", "S", "S"][index]}
                     </Text>
@@ -151,7 +155,6 @@ export default function StepDetailScreen() {
               })}
             </View>
 
-            {/* 3. Week Bottom Stats */}
             <View className="flex-row w-full justify-around px-8">
               <View className="items-center">
                 <Ionicons name="location-outline" size={32} color="white" />
@@ -167,13 +170,14 @@ export default function StepDetailScreen() {
           </View>
         )}
 
-        {/*MONTH VIEW */}
+        {/* MONTH VIEW */}
         {activeTab === "Month" && (
           <View className="px-4">
             <View className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
               <Text className="text-white text-center mb-4 text-lg font-bold">
                 September 2025
               </Text>
+
               <View className="flex-row justify-around mb-2">
                 {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
                   <Text key={i} className="text-gray-500 font-bold">
@@ -181,14 +185,19 @@ export default function StepDetailScreen() {
                   </Text>
                 ))}
               </View>
+
               <View className="flex-row flex-wrap">
                 {Array.from({ length: 30 }, (_, i) => i + 1).map((day) => (
                   <View key={day} className="w-[14.28%] items-center mb-4">
                     <View
-                      className={`h-8 w-8 items-center justify-center rounded-full ${day === 4 ? "bg-red-600" : ""}`}
+                      className={`h-8 w-8 items-center justify-center rounded-full ${
+                        day === 4 ? "bg-red-600" : ""
+                      }`}
                     >
                       <Text
-                        className={`text-xs ${day === 4 ? "text-white font-bold" : "text-gray-400"}`}
+                        className={`text-xs ${
+                          day === 4 ? "text-white font-bold" : "text-gray-400"
+                        }`}
                       >
                         {day}
                       </Text>

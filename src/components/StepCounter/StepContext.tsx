@@ -10,6 +10,7 @@ import { Accelerometer } from "expo-sensors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../lib/supabaseClient";
 import { modifySteps, fetchSteps } from "../../routes/stepRoute";
+import { getUserInfo, updateUserInfo } from "../../routes/userRoute";
 
 interface StepContextType {
   steps: number;
@@ -24,7 +25,15 @@ export const StepProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [steps, setSteps] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
-  const lastSavedSteps = useRef(0); // To prevent spamming the database
+
+  const lastSavedSteps = useRef(0); // For daily sync throttling
+  const lastTotalSyncedSteps = useRef(0); // For total steps calculation
+  const stepsRef = useRef(0); // Keeps track of steps state inside the interval
+
+  // Keep ref in sync with state for the interval to read
+  useEffect(() => {
+    stepsRef.current = steps;
+  }, [steps]);
 
   // 1. Get current User ID
   useEffect(() => {
@@ -44,11 +53,9 @@ export const StepProvider: React.FC<{ children: React.ReactNode }> = ({
       // B. Load Cloud (If logged in)
       if (userId) {
         try {
-          // Get today's date string (YYYY-MM-DD)
           const today = new Date().toISOString().split("T")[0];
           const cloudData = await fetchSteps(userId, today, today);
 
-          // If cloud has more steps (e.g. from another device), use that
           if (
             cloudData &&
             cloudData.length > 0 &&
@@ -62,28 +69,23 @@ export const StepProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setSteps(finalSteps);
+      lastTotalSyncedSteps.current = finalSteps;
     };
 
     loadSteps();
   }, [userId]);
 
-  // 3. Save Logic (Throttled Sync)
+  // 3. Save Logic (Throttled Sync for Daily Steps)
   useEffect(() => {
     const saveSteps = async () => {
-      // Save Locally
       await AsyncStorage.setItem("dailySteps", steps.toString());
 
-      // Save to Cloud (Only if logged in and steps changed significantly)
-      // We check if steps > lastSaved + 10 to avoid sending request on EVERY step
       if (userId && steps > lastSavedSteps.current + 10) {
         try {
           const today = new Date().toISOString().split("T")[0];
-
-          // Use your route function!
           await modifySteps(userId, today, steps);
-
           lastSavedSteps.current = steps;
-          console.log(`☁️ Synced ${steps} steps to cloud.`);
+          console.log(`☁️ Synced ${steps} steps to daily log.`);
         } catch (err) {
           console.log("Cloud save failed:", err);
         }
@@ -93,7 +95,54 @@ export const StepProvider: React.FC<{ children: React.ReactNode }> = ({
     saveSteps();
   }, [steps, userId]);
 
-  // 4. Sensor Logic (Existing)
+  // 4. Sync Total Steps (Every 1 Minute)
+  useEffect(() => {
+    if (!userId) return;
+
+    const intervalId = setInterval(async () => {
+      const currentSteps = stepsRef.current;
+      const baseline = lastTotalSyncedSteps.current;
+
+      // If steps were reset (current < baseline), reset baseline and exit
+      if (currentSteps < baseline) {
+        lastTotalSyncedSteps.current = currentSteps;
+        return;
+      }
+
+      // Calculate how many NEW steps we walked since last sync
+      const delta = currentSteps - baseline;
+
+      // Only sync if we have new steps
+      if (delta > 0) {
+        try {
+          console.log(`Checking Total Steps Sync... Delta: ${delta}`);
+
+          // A. Fetch current Total from DB to be safe
+          const userInfo = await getUserInfo(userId);
+          const currentDbTotal = userInfo.total_steps || 0;
+
+          // B. Add the Delta
+          const newTotal = currentDbTotal + delta;
+
+          // C. Update DB
+          await updateUserInfo(userId, { total_steps: newTotal });
+
+          // D. Update baseline so we don't count these steps again
+          lastTotalSyncedSteps.current = currentSteps;
+
+          console.log(
+            ` Updated Lifetime Total: ${currentDbTotal} -> ${newTotal}`
+          );
+        } catch (err) {
+          console.error("Failed to sync total steps:", err);
+        }
+      }
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [userId]);
+
+  // 5. Sensor Logic
   useEffect(() => {
     if (Platform.OS === "web") return;
 
@@ -111,7 +160,10 @@ export const StepProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => subscription && subscription.remove();
   }, []);
 
-  const resetSteps = () => setSteps(0);
+  const resetSteps = () => {
+    setSteps(0);
+  };
+
   const simulateStep = () => setSteps((prev) => prev + 1);
 
   return (

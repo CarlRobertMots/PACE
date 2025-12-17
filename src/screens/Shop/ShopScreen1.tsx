@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/types";
+import { supabase } from "../../lib/supabaseClient";
 
 // Routes / Services
 import { getUserInfo, updateUserInfo } from "../../routes/userRoute";
@@ -34,19 +35,32 @@ export default function ShopScreen() {
     loadUser();
   }, []);
 
-  // Load user info from route/service
+  // Load user info from Auth & Database
   async function loadUser() {
     setLoading(true);
     try {
-      // TODO: Replace with authenticated user ID from your auth system
-      const CURRENT_USER_ID = "4122fa2d-bc73-4de5-b14a-81c6d6e4e4d6";
-      setUserId(CURRENT_USER_ID);
+      // 1. Get the authenticated user from Supabase
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-      const user = await getUserInfo(CURRENT_USER_ID);
-      setUserInfo(user);
-      setTotalSteps(user.total_steps || 0);
+      if (error || !user) {
+        Alert.alert("Error", "No authenticated user found. Please log in.");
+        // Optional: navigation.navigate("Login");
+        return;
+      }
+
+      const currentUserId = user.id;
+      setUserId(currentUserId);
+
+      // 2. Fetch the user's game data from your database using their real ID
+      const dbUser = await getUserInfo(currentUserId);
+
+      setUserInfo(dbUser);
+      setTotalSteps(dbUser.total_steps || 0);
     } catch (err) {
-      console.error(err);
+      console.error("Error loading user:", err);
       Alert.alert("Error", "Failed to load user info");
     } finally {
       setLoading(false);

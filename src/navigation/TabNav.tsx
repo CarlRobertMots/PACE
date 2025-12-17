@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image, StyleSheet } from "react-native";
 import HomeScreen from "../screens/Home/HomeScreen";
-import ShopScreen from "../screens/Shop/ShopScreen";
+import ShopScreen from "../screens/Shop/ShopScreen1";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import Colors from "../constants/colors";
 
