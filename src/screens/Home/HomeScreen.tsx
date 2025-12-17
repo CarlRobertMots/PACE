@@ -2,39 +2,41 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
+  Image,
   ScrollView,
-  TouchableOpacity,
+  SafeAreaView,
   ActivityIndicator,
   Pressable,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/types";
 
-// 1. Import Boss Service
+// Boss API
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
-// 2. Import Step Logic
+// Step tracker (UNCHANGED)
 import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
 
-export default function HomeScreen() {
+import BossHealthBar from "../../components/Boss/BossHealthBar";
+
+export default function IndexScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [loading, setLoading] = useState(true);
   const [boss, setBoss] = useState<BossData | null>(null);
 
   useEffect(() => {
-    loadCampData();
+    loadData();
   }, []);
 
-  const loadCampData = async () => {
-    setLoading(true);
+  const loadData = async () => {
     try {
       const bossData = await fetchCurrentBoss();
       setBoss(bossData);
-    } catch (error) {
-      console.error("Error loading home data:", error);
+    } catch (e) {
+      console.error(e);
       setBoss(null);
     } finally {
       setLoading(false);
@@ -43,83 +45,200 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator size="large" color="#fbbf24" />
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#a855f7" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-900">
-      <ScrollView className="flex-1 p-4">
-        {/* Header */}
-        <View className="mb-6 mt-2">
-          <Text className="text-white text-2xl font-bold">Base Camp</Text>
-          <Text className="text-gray-400 text-sm">Prepare for battle</Text>
+    <SafeAreaView style={styles.root}>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        {/* BACKGROUND */}
+        <View style={styles.hero}>
+          <Image
+            source={{
+              uri: "https://api.builder.io/api/v1/image/assets/TEMP/c10362e8e734be7ef54fc13260826af602f02a67?width=1375",
+            }}
+            style={styles.heroImg}
+            resizeMode="cover"
+          />
         </View>
 
-        {/* BOSS SECTION */}
-        <View className="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700 shadow-lg">
-          <Text className="text-red-500 font-bold uppercase tracking-widest text-xs mb-2">
-            Current Target
-          </Text>
-          <View className="items-center">
-            {/* Boss Icon */}
-            <View className="h-24 w-24 bg-gray-700 rounded-full mb-3 items-center justify-center">
-              <Text className="text-4xl">👹</Text>
-            </View>
+        <View style={styles.content}>
+          {/* BOSS */}
 
-            <Text className="text-white text-xl font-bold mb-1">
-              {boss?.name ?? "Unknown Beast"}
-            </Text>
+          <BossHealthBar
+          name={boss?.name ?? "Master Beater"}
+          currentHp={boss?.current_hp ?? 650}
+          maxHp={boss?.max_hp ?? 1000}
+          />
 
-            {/* HP Bar */}
-            <View className="w-full bg-gray-900 h-4 rounded-full mt-2 overflow-hidden border border-gray-600">
-              <View
-                className="h-full bg-red-600"
-                style={{
-                  width: boss ? `${(boss.current_hp / boss.max_hp) * 100}%` : "0%",
-                }}
-              />
-            </View>
-
-            <Text className="text-gray-400 text-xs mt-1">
-              {boss ? `${boss.current_hp} / ${boss.max_hp} HP` : "Loading..."}
-            </Text>
-
-            <Pressable
-              className="mt-6 bg-blue-600 px-6 py-2 rounded-full"
-              onPress={() => navigation.navigate("DetailedView")}
-            >
-              <Text className="text-white font-bold">Detailed View</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        {/* STEP SECTION */}
-        <View className="bg-gray-800 rounded-xl p-6 border border-gray-700 items-center mb-6">
-          <Text className="text-gray-400 text-sm mb-4 uppercase tracking-wider">
-            Today's Progress
-          </Text>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate("StepDetailScreen" as never)}
-          >
-            {/* Render StepCircle only if platform supports it */}
+          {/* STEP TRACKER — SAME LOGIC */}
+          <View style={styles.stepSection}>
             {Platform.OS !== "web" ? (
-              <StepCircle />
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("StepDetailScreen" as never)
+                }
+              >
+                <StepCircle />
+              </Pressable>
             ) : (
-              <View className="h-24 w-24 bg-gray-700 rounded-full items-center justify-center">
-                <Text className="text-white">0%</Text>
+              <View style={styles.stepFallback}>
+                <Text style={{ color: "white" }}>0%</Text>
               </View>
             )}
-          </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity className="mt-6 bg-blue-600 px-6 py-2 rounded-full">
-            <Text className="text-white font-bold">Sync Data</Text>
-          </TouchableOpacity>
+          {/* LEADERBOARD */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Leaderboard</Text>
+
+            {[
+              { user: "User 1", level: "Lvl 1: Crook", score: "7000" },
+              { user: "User 2", level: "Lvl 1: Crook", score: "6000" },
+              { user: "User 3", level: "Lvl 1: Crook", score: "1000" },
+            ].map((e, i) => (
+              <View key={i} style={styles.lbRow}>
+                <View style={styles.avatar} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.lbText}>{e.user}</Text>
+                  <Text style={styles.lbText}>{e.level}</Text>
+                </View>
+                <Text style={styles.lbScore}>{e.score}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </ScrollView>
+
     </SafeAreaView>
   );
 }
+
+
+const PURPLE = "rgba(168,85,247,0.5)";
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: "black",
+  },
+
+  loader: {
+    flex: 1,
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  hero: {
+    height: 398,
+    overflow: "hidden",
+  },
+  heroImg: {
+    width: "100%",
+    height: "100%",
+  },
+
+  content: {
+    paddingHorizontal: 16,
+    marginTop: -48,
+  },
+
+  bossTitle: {
+    color: "white",
+    fontFamily: "Pixel",
+    fontSize: 16,
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1, height: 1 },
+  },
+
+  hpRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 6,
+  },
+  hpFill: {
+    height: 24,
+    backgroundColor: "#dc2626",
+    borderWidth: 1,
+    borderColor: "black",
+    flex: 1,
+  },
+  hpBox: {
+    width: 80,
+    height: 24,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "black",
+  },
+
+  hpText: {
+    color: "white",
+    fontFamily: "Pixel",
+    fontSize: 12,
+    marginTop: 4,
+  },
+
+  stepSection: {
+    alignItems: "center",
+    marginVertical: 48,
+  },
+
+  stepFallback: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: "#444",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  card: {
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderWidth: 2,
+    borderColor: PURPLE,
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 80,
+  },
+
+  cardTitle: {
+    color: "white",
+    fontFamily: "Sans",
+    fontSize: 28,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+
+  lbRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 20,
+  },
+
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "black",
+  },
+
+  lbText: {
+    color: "white",
+    fontFamily: "Pixel",
+    fontSize: 16,
+  },
+
+  lbScore: {
+    color: "white",
+    fontFamily: "Pixel",
+    fontSize: 24,
+  },
+});

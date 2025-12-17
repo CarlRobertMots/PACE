@@ -5,6 +5,7 @@ import HomeScreen from "../screens/Home/HomeScreen";
 import ShopScreen from "../screens/Shop/ShopScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import Colors from "../constants/colors";
+import SettingsScreen from "../screens/Settings/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -65,6 +66,21 @@ export default function TabNav() {
           },
         }}
       />
+      <Tab.Screen
+  name="Settings"
+  component={SettingsScreen}
+  options={{
+    tabBarIcon: ({ focused }) => {
+      const iconSource = focused
+        ? require("../../assets/settingsIcon.png")
+        : require("../../assets/settingsIcon.png");
+
+      return (
+        <Image source={iconSource} style={{ width: 24, height: 24 }} />
+      );
+    },
+  }}
+/>
     </Tab.Navigator>
   );
 }
