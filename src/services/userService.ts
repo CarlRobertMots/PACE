@@ -19,7 +19,10 @@ type UpdateUserPayload = Partial<{
   level: number;
 }>;
 
-export async function updateUserInfoById(userId: string, payload: UpdateUserPayload) {
+export async function updateUserInfoById(
+  userId: string,
+  payload: UpdateUserPayload
+) {
   const { data, error } = await supabase
     .from("users")
     .update(payload)
