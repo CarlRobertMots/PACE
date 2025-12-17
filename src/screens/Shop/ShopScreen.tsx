@@ -8,11 +8,9 @@ import {
   StyleSheet,
 } from "react-native";
 
-
 export default function Shop() {
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Restore purchases */}
         <TouchableOpacity style={styles.restoreBtn}>
@@ -31,9 +29,7 @@ export default function Shop() {
 
           <View style={styles.offerRow}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.offerDesc}>
-                Legendary Chest{"\n"}50% OFF
-              </Text>
+              <Text style={styles.offerDesc}>Legendary Chest{"\n"}50% OFF</Text>
             </View>
 
             <Image
@@ -83,7 +79,6 @@ export default function Shop() {
     </View>
   );
 }
-
 
 const PURPLE = "rgba(168,85,247,0.5)";
 

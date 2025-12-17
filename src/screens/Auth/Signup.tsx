@@ -8,6 +8,9 @@ import {
   Platform,
   ImageBackground,
   StyleSheet,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
@@ -36,14 +39,7 @@ export default function Signup({ onSubmit }: Props) {
     setLoading(true);
 
     try {
-      await signup({
-        email,
-        username,
-        password,
-      });
-
-      // Optional: navigate immediately
-      // Or let your auth listener redirect automatically
+      await signup({ email, username, password });
       navigation.reset({
         index: 0,
         routes: [{ name: "Home" }],
@@ -61,98 +57,106 @@ export default function Signup({ onSubmit }: Props) {
       style={styles.wallpaper}
       resizeMode="cover"
     >
-      <KeyboardAvoidingView
-        behavior={Platform.select({ ios: "padding", android: undefined })}
-        style={styles.container}
-      >
-        <View style={styles.container}>
-          <BlurView intensity={8} style={styles.blurContainer}>
-            <Text style={styles.title}>Register an account</Text>
-          </BlurView>
+      {/* 1. Darker Overlay */}
+      <View style={styles.overlay} />
 
-          {error && <Text style={styles.error}>{error}</Text>}
-
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="you@example.com"
-            placeholderTextColor="#fff"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-            editable={!loading}
-          />
-
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            placeholderTextColor="#fff"
-            autoCapitalize="none"
-            value={username}
-            onChangeText={setUsername}
-            editable={!loading}
-          />
-
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            placeholderTextColor="#fff"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            editable={!loading}
-          />
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              loading && styles.buttonDisabled,
-              pressed && !loading && { opacity: 0.85 },
-            ]}
-            onPress={handlePress}
-            disabled={loading}
+      {/* 2. Dismiss Keyboard on Tap */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView
+          behavior={Platform.select({ ios: "padding", android: "height" })}
+          style={{ flex: 1, width: "100%" }}
+        >
+          {/* 3. ScrollView for Android/Small Screen support */}
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.buttonText}>
-              {loading ? "Registering..." : "Register Account"}
-            </Text>
-          </Pressable>
+            <BlurView intensity={8} style={styles.blurContainer}>
+              <Text style={styles.title}>Register an account</Text>
+            </BlurView>
 
-          <Text style={styles.footerText}>
-            Already have an account?{" "}
-            <Text
-              style={styles.footerLink}
-              onPress={() => navigation.navigate("Signin")}
+            {error && <Text style={styles.error}>{error}</Text>}
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor="#fff"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+              editable={!loading}
+            />
+
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#fff"
+              autoCapitalize="none"
+              value={username}
+              onChangeText={setUsername}
+              editable={!loading}
+            />
+
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#fff"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              editable={!loading}
+            />
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                loading && styles.buttonDisabled,
+                pressed && !loading && { opacity: 0.85 },
+              ]}
+              onPress={handlePress}
+              disabled={loading}
             >
-              Sign in
+              <Text style={styles.buttonText}>
+                {loading ? "Registering..." : "Register Account"}
+              </Text>
+            </Pressable>
+
+            <Text style={styles.footerText}>
+              Already have an account?{" "}
+              <Text
+                style={styles.footerLink}
+                onPress={() => navigation.navigate("Signin")}
+              >
+                Sign in
+              </Text>
             </Text>
-          </Text>
-        </View>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </ImageBackground>
   );
 }
 
-/* =========================
-   Styles (local to screen)
-   ========================= */
-
 const styles = StyleSheet.create({
-  container: {
+  wallpaper: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     width: "100%",
   },
-
-  wallpaper: {
+  overlay: {
     ...StyleSheet.absoluteFillObject,
-    flex: 1,
-    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
-
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
   title: {
     color: "#fff",
     fontSize: 34,
@@ -162,7 +166,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
-
   blurContainer: {
     padding: 25,
     margin: 16,
@@ -171,15 +174,16 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     overflow: "hidden",
   },
-
   label: {
     width: "90%",
     color: "white",
     fontSize: 14,
     marginBottom: 8,
     fontFamily: "Minecraft",
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
-
   input: {
     width: "90%",
     backgroundColor: "rgba(255,255,255,0.2)",
@@ -187,11 +191,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 12,
     marginBottom: 16,
     color: "white",
   },
-
   button: {
     width: "90%",
     backgroundColor: "rgba(255,255,255,0.2)",
@@ -200,33 +203,30 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 10,
   },
-
   buttonDisabled: {
     opacity: 0.6,
   },
-
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "400",
   },
-
   footerText: {
     color: "white",
-    marginTop: 8,
+    marginTop: 20,
     textAlign: "center",
     fontSize: 14,
   },
-
   footerLink: {
     textDecorationLine: "underline",
     fontWeight: "600",
     color: "#fff",
   },
-
   error: {
-    color: "red",
+    color: "#ff4444",
     marginBottom: 10,
+    fontWeight: "bold",
   },
 });

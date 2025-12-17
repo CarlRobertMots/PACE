@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -16,16 +16,30 @@ import { RootStackParamList } from "../../navigation/types";
 // Boss API
 import { fetchCurrentBoss, BossData } from "../../api/bosses/bossService";
 
-// Step tracker (UNCHANGED)
-import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
+// 2. Import Step Context & New Visual Component
+import { useSteps } from "../../components/StepCounter/StepContext";
+import StepCircle from "../../components/StepCounter/StepCircle";
 
 import BossHealthBar from "../../components/Boss/BossHealthBar";
 
 export default function IndexScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
   const [loading, setLoading] = useState(true);
   const [boss, setBoss] = useState<BossData | null>(null);
+
+  const { steps } = useSteps();
+
+  // StepCircle ray data
+  const mockDetailedHistory = useMemo(() => {
+    return Array.from({ length: 144 }).map((_, i) => {
+      let base = Math.random() * 50;
+      if (i > 36 && i < 60) base += Math.random() * 800;
+      if (i > 72 && i < 84) base += Math.random() * 400;
+      if (i > 108 && i < 126) base += Math.random() * 1000;
+      if (i < 30 || i > 138) base = Math.random() < 0.1 ? 50 : 0;
+      return Math.floor(base);
+    });
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -53,7 +67,6 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView style={styles.root}>
-
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {/* BACKGROUND */}
         <View style={styles.hero}>
@@ -70,20 +83,23 @@ export default function IndexScreen() {
           {/* BOSS */}
 
           <BossHealthBar
-          name={boss?.name ?? "Master Beater"}
-          currentHp={boss?.current_hp ?? 650}
-          maxHp={boss?.max_hp ?? 1000}
+            name={boss?.name ?? "Master Beater"}
+            currentHp={boss?.current_hp ?? 650}
+            maxHp={boss?.max_hp ?? 1000}
           />
 
           {/* STEP TRACKER — SAME LOGIC */}
           <View style={styles.stepSection}>
             {Platform.OS !== "web" ? (
               <Pressable
-                onPress={() =>
-                  navigation.navigate("StepDetailScreen" as never)
-                }
+                onPress={() => navigation.navigate("StepDetailScreen" as never)}
               >
-                <StepCircle />
+                <StepCircle
+                  steps={steps}
+                  radius={96}
+                  detailedData={mockDetailedHistory}
+                  title="Today"
+                />
               </Pressable>
             ) : (
               <View style={styles.stepFallback}>
@@ -113,11 +129,9 @@ export default function IndexScreen() {
           </View>
         </View>
       </ScrollView>
-
     </SafeAreaView>
   );
 }
-
 
 const PURPLE = "rgba(168,85,247,0.5)";
 

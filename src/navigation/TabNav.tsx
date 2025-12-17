@@ -67,20 +67,20 @@ export default function TabNav() {
         }}
       />
       <Tab.Screen
-  name="Settings"
-  component={SettingsScreen}
-  options={{
-    tabBarIcon: ({ focused }) => {
-      const iconSource = focused
-        ? require("../../assets/settingsIcon.png")
-        : require("../../assets/settingsIcon.png");
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => {
+            const iconSource = focused
+              ? require("../../assets/settingsIcon.png")
+              : require("../../assets/settingsIcon.png");
 
-      return (
-        <Image source={iconSource} style={{ width: 24, height: 24 }} />
-      );
-    },
-  }}
-/>
+            return (
+              <Image source={iconSource} style={{ width: 24, height: 24 }} />
+            );
+          },
+        }}
+      />
     </Tab.Navigator>
   );
 }
