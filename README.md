@@ -43,7 +43,6 @@ Key features include:
 - [![TypeScript][TypeScript]][TypeScript-url]
 - [![Tailwind][Tailwind]][Tailwind-url]
 - [![Supabase][Supabase]][Supabase-url]
-- [![Redux][Redux]][Redux-url]
 - **Animations:** React Native Reanimated
 - **Icons:** Expo Vector Icons
 - **Sensors:** Expo Sensors (Pedometer)
@@ -86,21 +85,23 @@ Project Link: [https://github.com/CarlRobertMots/PACE](https://github.com/CarlRo
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-[contributors-shield]: [https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge](https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge)
-[contributors-url]: [https://github.com/othneildrew/Best-README-Template/graphs/contributors](https://github.com/othneildrew/Best-README-Template/graphs/contributors)
-[forks-shield]: [https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge](https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge)
-[forks-url]: [https://github.com/othneildrew/Best-README-Template/network/members](https://github.com/othneildrew/Best-README-Template/network/members)
-[stars-shield]: [https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge](https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge)
-[stars-url]: [https://github.com/othneildrew/Best-README-Template/stargazers](https://github.com/othneildrew/Best-README-Template/stargazers)
-[issues-shield]: [https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge](https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge)
-[issues-url]: [https://github.com/othneildrew/Best-README-Template/issues](https://github.com/othneildrew/Best-README-Template/issues)
-[license-shield]: [https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge](https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge)
-[license-url]: [https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt](https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt)
-[React-Native]: [https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-[React-url]: [https://reactnative.dev/](https://reactnative.dev/)
-[Expo]: [https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white](https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white)
-[Expo-url]: [https://expo.dev/](https://expo.dev/)
-[TypeScript]: [https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-[TypeScript-url]: [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
-[Tailwind]: [https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-[Tailwind-url]: [https://tailwindcss.com/](https://tailwindcss.com/)
+[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
+[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
+[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
+[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
+[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
+[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[React-Native]: https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactnative.dev/
+[Expo]: https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white
+[Expo-url]: https://expo.dev/
+[TypeScript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
+[TypeScript-url]: https://www.typescriptlang.org/
+[Tailwind]: https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white
+[Tailwind-url]: https://tailwindcss.com/
+[Supabase]: https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white
+[Supabase-url]: https://supabase.com/
