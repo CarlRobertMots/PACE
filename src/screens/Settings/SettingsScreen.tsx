@@ -15,7 +15,9 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: getBackgroundColor() }]}>
+    <SafeAreaView
+      style={[styles.root, { backgroundColor: getBackgroundColor() }]}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <ThemeSelectorCard />
         <LogoutCard />

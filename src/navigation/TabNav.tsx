@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image, StyleSheet } from "react-native";
 import HomeScreen from "../screens/Home/HomeScreen";
-import ShopScreen from "../screens/Shop/ShopScreen1";
+import ShopScreen from "../screens/Shop/ShopScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import Colors from "../constants/colors";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
@@ -67,20 +67,20 @@ export default function TabNav() {
         }}
       />
       <Tab.Screen
-  name="Settings"
-  component={SettingsScreen}
-  options={{
-    tabBarIcon: ({ focused }) => {
-      const iconSource = focused
-        ? require("../../assets/settingsIcon.png")
-        : require("../../assets/settingsIcon.png");
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => {
+            const iconSource = focused
+              ? require("../../assets/settingsIcon.png")
+              : require("../../assets/settingsIcon.png");
 
-      return (
-        <Image source={iconSource} style={{ width: 24, height: 24 }} />
-      );
-    },
-  }}
-/>
+            return (
+              <Image source={iconSource} style={{ width: 24, height: 24 }} />
+            );
+          },
+        }}
+      />
     </Tab.Navigator>
   );
 }
