@@ -20,7 +20,7 @@ export async function addDefeatedBoss(userId: string, bossId: string) {
       defeated_at: new Date().toISOString(),
     })
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
   return data;

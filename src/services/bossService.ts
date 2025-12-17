@@ -15,7 +15,7 @@ export async function getBossById(bossId: string) {
     .from("bosses")
     .select("id, name, required_steps, reward_xp, sprite_url, reward_skin_id")
     .eq("id", bossId)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
 

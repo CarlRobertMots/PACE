@@ -5,7 +5,7 @@ export async function getUserInfoById(userId: string) {
     .from("users")
     .select("id, username, avatar_url, xp, total_steps, level")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
 
@@ -25,7 +25,7 @@ export async function updateUserInfoById(userId: string, payload: UpdateUserPayl
     .update(payload)
     .eq("id", userId)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(error.message);
 
