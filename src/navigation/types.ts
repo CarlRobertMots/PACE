@@ -8,6 +8,7 @@ export type TabStackParamList = {
   Camp: undefined; // The Boss/Steps screen
   Shop: undefined;
   Profile: undefined;
+  Settings: undefined;
 };
 
 // 2. The Root Stack (Matches your App.tsx structure)

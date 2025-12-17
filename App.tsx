@@ -13,6 +13,8 @@ import DetailedView from "./src/screens/Home/DetailedView";
 import StepDetailScreen from "./src/screens/Steps/StepDetailScreen";
 import { RootStackParamList } from "./src/navigation/types";
 
+import { ThemeProvider } from "./src/context/ThemeContext";
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
