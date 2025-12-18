@@ -17,6 +17,7 @@ import { BlurView } from "expo-blur";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/types";
 import { signin } from "../../routes/authRoute";
+import { Fonts } from "../../constants/fonts";
 
 type Props = {
   onSubmit?: (email: string, password: string) => Promise<void> | void;
@@ -171,7 +172,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 34,
+    fontFamily: Fonts.MAC,
+    fontSize: 30,
     fontWeight: "400",
     textAlign: "center",
     textShadowOffset: { width: 1, height: 1 },
@@ -179,7 +181,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: "#fff",
-    fontSize: 16,
+    fontFamily: Fonts.MAC,
+    fontSize: 12,
     fontWeight: "400",
     textAlign: "center",
     textShadowOffset: { width: 1, height: 1 },
@@ -195,12 +198,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "90%",
     color: "white",
+    fontFamily: Fonts.MAC,
+    fontSize: 12,
   },
   label: {
     width: "90%",
     alignSelf: "center",
     textAlign: "left",
     color: "#fff",
+    fontFamily: Fonts.MAC,
     fontSize: 14,
     marginBottom: 8,
     textShadowColor: "rgba(0, 0, 0, 0.75)",
@@ -210,6 +216,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#ff4444",
     marginBottom: 10,
+    fontFamily: Fonts.MAC,
+    fontSize: 10,
     fontWeight: "600",
   },
   buttonOuterLayout: {
@@ -237,17 +245,21 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: "white",
+    fontFamily: Fonts.MAC,
     fontSize: 16,
     fontWeight: "400",
     textAlign: "center",
   },
   forgotText: {
     textAlign: "right",
+    fontFamily: Fonts.MAC,
+    fontSize: 12,
     width: "90%",
     color: "white",
     marginVertical: 15,
   },
   footerText: {
+    fontFamily: Fonts.MAC,
     color: "white",
     marginTop: 20,
     textAlign: "center",
@@ -261,6 +273,7 @@ const styles = StyleSheet.create({
   blurContainer: {
     paddingVertical: 20,
     paddingHorizontal: 25,
+    gap: 5,
     width: "90%",
     margin: 16,
     borderRadius: 20,

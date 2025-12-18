@@ -16,6 +16,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
 import { RootStackParamList } from "../../navigation/types";
 import { signup } from "../../routes/authRoute";
+import { Fonts } from "../../constants/fonts"; // <-- Import your font constant
 
 type Props = {
   onSubmit?: (
@@ -57,22 +58,19 @@ export default function Signup({ onSubmit }: Props) {
       style={styles.wallpaper}
       resizeMode="cover"
     >
-      {/* 1. Darker Overlay */}
       <View style={styles.overlay} />
 
-      {/* 2. Dismiss Keyboard on Tap */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
           behavior={Platform.select({ ios: "padding", android: "height" })}
           style={{ flex: 1, width: "100%" }}
         >
-          {/* 3. ScrollView for Android/Small Screen support */}
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <BlurView intensity={8} style={styles.blurContainer}>
+            <BlurView intensity={20} style={styles.blurContainer}>
               <Text style={styles.title}>Register an account</Text>
             </BlurView>
 
@@ -82,7 +80,7 @@ export default function Signup({ onSubmit }: Props) {
             <TextInput
               style={styles.input}
               placeholder="you@example.com"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#FFFFFF"
               autoCapitalize="none"
               keyboardType="email-address"
               value={email}
@@ -94,7 +92,7 @@ export default function Signup({ onSubmit }: Props) {
             <TextInput
               style={styles.input}
               placeholder="Username"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#FFFFFF"
               autoCapitalize="none"
               value={username}
               onChangeText={setUsername}
@@ -105,7 +103,7 @@ export default function Signup({ onSubmit }: Props) {
             <TextInput
               style={styles.input}
               placeholder="••••••••"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#FFFFFF"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -159,15 +157,18 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 34,
-    fontFamily: "Minecraft",
-    fontWeight: "400",
+    fontSize: 30, // same as SignIn
+    fontWeight: "400", // same as SignIn
+    fontFamily: Fonts.MAC,
     textAlign: "center",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   blurContainer: {
-    padding: 25,
+    paddingVertical: 20,
+    paddingHorizontal: 25,
+    gap: 5,
+    width: "90%",
     margin: 16,
     borderRadius: 20,
     borderColor: "white",
@@ -176,10 +177,11 @@ const styles = StyleSheet.create({
   },
   label: {
     width: "90%",
-    color: "white",
-    fontSize: 14,
+    color: "#fff",
+    fontSize: 14, // same as SignIn
+    fontWeight: "400", // same as SignIn
+    fontFamily: Fonts.MAC,
     marginBottom: 8,
-    fontFamily: "Minecraft",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
@@ -194,6 +196,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginBottom: 16,
     color: "white",
+    fontFamily: Fonts.MAC,
+    fontSize: 12, // same as SignIn
+    fontWeight: "400", // same as SignIn
   },
   button: {
     width: "90%",
@@ -210,23 +215,30 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "400",
+    fontSize: 16, // same as SignIn
+    fontWeight: "400", // same as SignIn
+    fontFamily: Fonts.MAC,
+    textAlign: "center",
   },
   footerText: {
-    color: "white",
+    fontFamily: Fonts.MAC,
+    color: "#fff",
     marginTop: 20,
     textAlign: "center",
-    fontSize: 14,
+    fontSize: 14, // same as SignIn
+    fontWeight: "400", // same as SignIn
   },
   footerLink: {
     textDecorationLine: "underline",
     fontWeight: "600",
     color: "#fff",
+    fontFamily: Fonts.MAC,
   },
   error: {
     color: "#ff4444",
     marginBottom: 10,
-    fontWeight: "bold",
+    fontWeight: "600", // same as SignIn
+    fontFamily: Fonts.MAC,
+    fontSize: 10, // same as SignIn
   },
 });
