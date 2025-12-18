@@ -89,9 +89,9 @@ export default function BossDetailScreen() {
           resizeMode="cover"
         />
         <Image
-          source={{ uri: boss?.sprite_url }}
-          style={styles.bossSprite}
-          resizeMode="contain"
+        source={require("../../../assets/IMP.png")}
+        style={styles.bossSprite}
+        resizeMode="contain"
         />
       </View>
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   loader: { flex: 1, justifyContent: "center", alignItems: "center" },
   hero: { height: 398, overflow: "hidden", position: "relative" },
   heroImg: { width: "100%", height: "100%", position: "absolute" },
-  bossSprite: { width: 200, height: 150, position: "absolute", top: 50, left: "50%", marginLeft: -100 },
+  bossSprite: { width: 400, height: 400, position: "absolute", top: -40, left: "26%", marginLeft: -100 },
   content: { paddingHorizontal: 16, marginTop: -48 },
   bossName: { color: "white", fontFamily: "Pixel", fontSize: 16, textShadowColor: "#000", textShadowOffset: { width: 1, height: 1 }, marginBottom: 8 },
   hpRow: { flexDirection: "row", gap: 8, marginBottom: 4 },

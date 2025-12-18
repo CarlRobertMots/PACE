@@ -21,11 +21,18 @@ import { StepCircle } from "../../components/StepCounter/StepCountDisplay";
 
 import BossHealthBar from "../../components/Boss/BossHealthBar";
 
+
+
+type BossWithSprite = BossData & {
+  sprite_url?: string;
+};
+
 export default function IndexScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [loading, setLoading] = useState(true);
-  const [boss, setBoss] = useState<BossData | null>(null);
+  const [boss, setBoss] = useState<BossWithSprite | null>(null);
+
 
   useEffect(() => {
     loadData();
@@ -53,7 +60,6 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView style={styles.root}>
-
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {/* BACKGROUND */}
         <View style={styles.hero}>
@@ -67,17 +73,20 @@ export default function IndexScreen() {
         </View>
 
         <View style={styles.content}>
-          {/* BOSS */}
+          {/* BOSS (FROM SUPABASE) */}
+<Pressable onPress={() => navigation.navigate("DetailedView")}>
+  <Image
+    source={require("../../../assets/IMP.png")}
+    style={styles.bossSprite}
+    resizeMode="contain"
+  />
 
-        <Pressable
-          onPress={() => navigation.navigate("DetailedView")}
-        >
-          <BossHealthBar
-            name={boss?.name ?? "Master Beater"}
-            currentHp={boss?.current_hp ?? 650}
-            maxHp={boss?.max_hp ?? 1000}
-          />
-        </Pressable>
+  <BossHealthBar
+    name={boss?.name ?? "Unknown Boss"}
+    currentHp={650}   // static for now
+    maxHp={1000}      // static for now
+  />
+</Pressable>
 
           {/* STEP TRACKER — SAME LOGIC */}
           <View style={styles.stepSection}>
@@ -117,11 +126,9 @@ export default function IndexScreen() {
           </View>
         </View>
       </ScrollView>
-
     </SafeAreaView>
   );
 }
-
 
 const PURPLE = "rgba(168,85,247,0.5)";
 
@@ -150,41 +157,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     marginTop: -48,
-  },
-
-  bossTitle: {
-    color: "white",
-    fontFamily: "Pixel",
-    fontSize: 16,
-    textShadowColor: "#000",
-    textShadowOffset: { width: 1, height: 1 },
-  },
-
-  hpRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 6,
-  },
-  hpFill: {
-    height: 24,
-    backgroundColor: "#dc2626",
-    borderWidth: 1,
-    borderColor: "black",
-    flex: 1,
-  },
-  hpBox: {
-    width: 80,
-    height: 24,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "black",
-  },
-
-  hpText: {
-    color: "white",
-    fontFamily: "Pixel",
-    fontSize: 12,
-    marginTop: 4,
   },
 
   stepSection: {
@@ -245,4 +217,6 @@ const styles = StyleSheet.create({
     fontFamily: "Pixel",
     fontSize: 24,
   },
+
+  bossSprite: { width: 400, height: 400, position: "absolute", top: -400, left: "26%", marginLeft: -100 },
 });
